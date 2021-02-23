@@ -1,0 +1,41 @@
+﻿version: '3.7'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.1.0
+    container_name: zookeeper
+    logging:
+      driver: none
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - kafka
+
+  broker:
+    image: confluentinc/cp-kafka:6.1.0
+    container_name: kafka
+    depends_on: 
+      - zookeeper
+    logging:
+      driver: none
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
+      KAFKA_BROKER_ID: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "payments:1:1,laundering-check:1:1"
+    ports:
+      - 9092:9092
+    networks: 
+      - kafka
+        
+  sfr_messaging:
+    container_name: sfr_messaging
+    build: .
+    networks: 
+      - kafka
+    depends_on: 
+      - broker
+
+networks:
+  kafka:
