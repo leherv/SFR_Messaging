@@ -22,6 +22,8 @@ namespace SFR_Messaging.TransactionAnalyticsService
             PropertyNameCaseInsensitive = true,
             Converters = { new JsonStringEnumConverter()}
         };
+        
+        // TODO: using KTable from kafka would have been smarter
         private (int accepted, int declined) _stats = new(0, 0);
 
         public TransactionAnalyticsService(ILogger<TransactionAnalyticsService> logger,
